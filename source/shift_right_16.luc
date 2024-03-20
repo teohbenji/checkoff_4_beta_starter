@@ -1,0 +1,84 @@
+module shift_right_16 (
+    input a[16],  
+    input b[4],  
+    input alufn[6],
+    output shifted[16]
+  ) {
+  
+  sig mux1_output[16], mux2_output[16], mux3_output[16];
+    
+  always {
+    //8-bit mux
+    if(b[3] == b1) {          
+      if(alufn[1] == b1 & a[15] == b1){
+        //shift right arithmetic and MSB=1
+        mux1_output[7:0] = a[15:8];
+        mux1_output[15:8] = 8x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+        mux1_output[7:0] = a[15:8];
+        mux1_output[15:8] = 8x{b0};
+      }
+      
+    } else {
+      //no shift
+      mux1_output = a;
+    }
+    
+    //4-bit mux
+    if(b[2] == b1) {          
+      if(alufn[1] == b1 & a[15] == b1){
+        //shift right arithmetic and MSB=1
+        mux2_output[11:0] = mux1_output[15:4]; 
+        mux2_output[15:12] = 4x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+        mux2_output[11:0] = mux1_output[15:4]; 
+        mux2_output[15:12] = 4x{b0};
+      }
+      
+    } else {
+      //no shift
+      mux2_output = mux1_output;
+    }
+    
+    //2-bit mux
+    if(b[1] == b1) {          
+      if(alufn[1] == b1 & a[15] == b1){
+        //shift right arithmetic and MSB=1
+        mux3_output[13:0] = mux2_output[15:2]; 
+        mux3_output[15:14] = 2x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+         mux3_output[13:0] = mux2_output[15:2]; 
+         mux3_output[15:14] = 2x{b0};
+      }
+      
+    } else {
+      //no shift
+      mux3_output = mux2_output;
+    }
+    
+    //1-bit mux
+    if(b[0] == b1) {          
+      if(alufn[1] == b1 & a[15] == b1){
+        //shift right arithmetic and MSB=1
+        shifted[14:0] = mux3_output[15:1]; 
+        shifted[15] = b1;
+        
+      } else {
+        //normal shift right or MSB!=1
+        shifted[14:0] = mux3_output[15:1]; 
+        shifted[15] = b0;
+      }
+      
+    } else {
+      //no shift
+      shifted = mux3_output;
+    }
+
+  }
+}

@@ -1,0 +1,65 @@
+module multiplier (
+    input a[16],
+    input b[16],
+    output mul[16]
+  ) {
+  
+  fa fa[120]; // need 496 fa to mutiply for 32 bit
+  var i; // row
+  var j; // column
+  var temp;
+  var current_row_fa_index;
+  var previous_row_fa_index;
+  
+  always {
+  
+    //LSB output
+    mul[0] = a[0] & b[0];
+    
+    // first row is AND gate
+    // Inputs into first row of 15 fa
+    for (j = 0; j <15 ; j++){
+      fa.a[j] = b[1] & a[j];
+      fa.b[j] = b[0] & a[j+1];
+      if (j==0){
+        fa.ci[j] = b0;
+      }
+      else{
+        fa.ci[j]=fa.co[j-1];
+      }
+    }
+    //output mul[1]
+    mul[1] = fa.s[0];
+    
+    current_row_fa_index = 15; //29, 42,
+    previous_row_fa_index = 0; //15, 29, 42,
+    
+    for (i = 2; i<15; i++){
+      temp = 0;
+      for (j=0; j<16-i; j++){
+        fa.a[current_row_fa_index+j] = a[j] & b[i];
+        fa.b[current_row_fa_index+j]=fa.s[previous_row_fa_index+j+1];
+        
+        if (j==0){
+          fa.ci[current_row_fa_index+j] = b0;
+        }
+        else{
+          fa.ci[current_row_fa_index+j] = fa.co[current_row_fa_index+j-1];
+        }
+        temp = j;
+      }
+      
+      previous_row_fa_index = current_row_fa_index;
+      current_row_fa_index = current_row_fa_index+temp+1;
+      mul[i] = fa.s[previous_row_fa_index];
+      
+    }
+    //last fa
+    
+    fa.a[119] = a[0] & b[15];
+    fa.b[119] = fa.s[118];
+    fa.ci[119] = b0;
+    mul[15] = fa.s[119];
+    
+  }
+}

@@ -1,0 +1,39 @@
+/*
+module shifter (
+    input a[32],
+    input b[5],
+    input alufn_signal[6],
+    output shift[32]
+  ) {
+
+  always {
+    // default values to silence errors 
+    shift = 0;
+  }
+} */
+module shifter (
+    input a[16],
+    input b[4],
+    input alufn_signal[6], //can be alufn_signal[2], depends on how you call it during testing
+    output shifted[16]
+  ) {
+
+  //Module initialisation
+  shift_left_16 left_shifter;
+  shift_right_16 right_shifter; 
+     
+  always {
+    left_shifter.a = a;
+    left_shifter.b = b;
+    right_shifter.a = a;
+    right_shifter.b = b;
+    right_shifter.alufn = alufn_signal;
+      
+    //Choose shifter output based on alufn_signal[0]
+    //0: left shifter, 1: right shifter
+    case(alufn_signal[0]) {
+      b0: shifted = left_shifter.shifted;
+      b1: shifted = right_shifter.shifted;
+      default: shifted = left_shifter.shifted;
+    }
+}

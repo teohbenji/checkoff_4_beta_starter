@@ -1,0 +1,50 @@
+module shift_left_16 (
+    input a[16],  
+    input b[4],  
+    output shifted[16]
+  ) {
+  
+  sig mux1_output[16], mux2_output[16], mux3_output[16];
+  
+  always {
+    //8-bit mux
+    case (b[3]) {
+      b0: mux1_output = a;
+      b1: 
+        mux1_output[15:8] = a[7:0]; 
+        mux1_output[7:0] = 8b0; //pad last 8 digits with 0
+      default:
+        mux1_output = a;
+    }
+    
+    //4-bit mux
+    case (b[2]) {
+      b0: mux2_output = mux1_output;
+      b1: 
+        mux2_output[15:4] = mux1_output[11:0]; 
+        mux2_output[3:0] = 4b0; //pad last 4 digits with 0
+      default:
+        mux2_output = mux1_output;
+    }
+
+    //2-bit mux
+    case (b[1]) {
+      b0: mux3_output = mux2_output;
+      b1: 
+        mux3_output[15:2] = mux2_output[13:0]; 
+        mux3_output[1:0] = 2b0; //pad last 2 digits with 0
+      default:
+        mux3_output = mux2_output;
+    }
+    
+    //1-bit mux
+    case (b[0]) {
+      b0: shifted = mux3_output;
+      b1: 
+        shifted[15:1] = mux3_output[14:0]; 
+        shifted[1:0] = b0; //pad last digit with 0
+      default:
+        shifted = mux3_output;
+    }
+  }
+}

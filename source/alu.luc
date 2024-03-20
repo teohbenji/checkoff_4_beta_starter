@@ -1,20 +1,71 @@
 module alu (
-  // do NOT change the interface
-    input a[32],
-    input b[32],
+    input a[16],
+    input b[16],
     input alufn_signal[6],
-    output out[32],
-    output zvn[3]
+    output out[16],
+    output z,
+    output v,
+    output n
   ) {
-  
-    // declare your ALU units here 
-  
+  adder adder;
+  boolean boolean;
+  shifter shifter;
+  compare compare; 
+  multiplier multiplier;
   
   always {
-    // paste your ALU implementation here 
-    out = 0;
-    zvn = 0;
+    //Adder
+    adder.a = a;
+    adder.b = b;
+    adder.alufn_signal = alufn_signal;
+    z=adder.z;
+    v=adder.v;
+    n=adder.n;
     
+    //Comparator
+    compare.v = adder.v;
+    compare.n = adder.n;
+    compare.z = adder.z;
+    compare.alufn_signal = alufn_signal;
     
+    //Boolean
+    boolean.a = a;
+    boolean.b = b;
+    boolean.alufn_signal = alufn_signal;
+    
+    //Shifter
+    shifter.a = a;
+    shifter.b = b;
+    shifter.alufn_signal = alufn_signal;
+    
+    //Multiplier
+    multiplier.a = a;
+    multiplier.b = b;
+    
+    case(c{alufn_signal[5],alufn_signal[4]}){
+    //Adder or comparator
+    b00: 
+      if(alufn_signal[1] == b0){
+        out = adder.out;
+      } else {
+        out = multiplier.mul;
+      }
+        
+    //Boolean
+    b01: 
+      out = boolean.bool;
+        
+    //Shifter
+    b10: 
+      out = shifter.shifted;
+        
+    //Comparator
+    b11: 
+      out = compare.cmp;
+    
+    default: 
+      out = 0;
+    }
+ 
   }
 }

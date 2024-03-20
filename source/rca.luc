@@ -1,0 +1,24 @@
+module rca #(
+      SIZE = 16: SIZE>0
+    )(
+    input a[SIZE], 
+    input b[SIZE],  
+    input ci,
+    output s[SIZE]
+  ) {
+  fa fa[SIZE];
+  var i;
+
+  always {
+    fa.a[0] = a[0];
+    fa.b[0] = b[0];
+    fa.ci[0] = ci;
+    for (i=1; i<SIZE; i++){
+      fa.a[i] = a[i];
+      fa.b[i]=b[i];
+      fa.ci[i] = fa.co[i-1];
+    }
+    
+    s = fa.s;
+  }
+}
