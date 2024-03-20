@@ -1,20 +1,20 @@
 module adder (
-    input a[16],
-    input b[16],
+    input a[32],
+    input b[32],
     input alufn_signal[6],
-    output out[16],
+    output out[32],
     output z,
     output v,
     output n
   ) {
-  rca rca(#SIZE(16));
-  sig xb[16];
+  rca rca(#SIZE(32));
+  sig xb[32];
 
  
 
   always {
     // default values to silence errors 
-    xb[15:0] = b ^ 16x{alufn_signal[0]};
+    xb[31:0] = b ^ 32x{alufn_signal[0]};
     rca.a = a;
     rca.b = xb;
     rca.ci = alufn_signal[0];
@@ -23,7 +23,7 @@ module adder (
     
     out = rca.s;
     z = ~|rca.s;
-    v = (a[15] & xb[15] & !rca.s[15]) | (!a[15] & !xb[15] & rca.s[15]);
-    n = rca.s[15];
+    v = (a[31] & xb[31] & !rca.s[31]) | (!a[31] & !xb[31] & rca.s[31]);
+    n = rca.s[31];
   }
 }

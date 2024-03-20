@@ -1,5 +1,5 @@
 module rca #(
-      SIZE = 16: SIZE>0
+      SIZE = 32: SIZE>0
     )(
     input a[SIZE], 
     input b[SIZE],  
