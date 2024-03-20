@@ -1,0 +1,20 @@
+module alu (
+  // do NOT change the interface
+    input a[32],
+    input b[32],
+    input alufn_signal[6],
+    output out[32],
+    output zvn[3]
+  ) {
+  
+    // declare your ALU units here 
+  
+  
+  always {
+    // paste your ALU implementation here 
+    out = 0;
+    zvn = 0;
+    
+    
+  }
+}
