@@ -1,0 +1,102 @@
+module shift_right_32 (
+    input a[32],  
+    input b[8],  
+    input alufn[6],
+    output shifted[32]
+  ) {
+  
+  sig mux1_output[32], mux2_output[32], mux3_output[32], mux4_output[32];
+    
+  always {
+    //16-bit mux
+    if(b[4] == b1) {          
+      if(alufn[1] == b1 & a[31] == b1){
+        //shift right arithmetic and MSB=1
+        mux1_output[15:0] = a[31:16]; //take 16 MSB bits
+        mux1_output[31:16] = 16x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+        mux1_output[15:0] = a[31:16]; //take 16 MSB bits
+        mux1_output[31:16] = 16x{b0}; 
+      }
+      
+    } else {
+      //no shift
+      mux1_output = a;
+    }
+    
+    //8-bit mux
+    if(b[3] == b1) {          
+      if(alufn[1] == b1 & a[31] == b1){
+        //shift right arithmetic and MSB=1
+        mux2_output[23:0] = mux1_output[31:8]; //take 24 MSB bits
+        mux2_output[31:24] = 8x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+        mux2_output[23:0] = mux1_output[31:8]; //take 24 MSB bits
+        mux2_output[31:24] = 8x{b0};
+      }
+      
+    } else {
+      //no shift
+      mux2_output = mux1_output;
+    }
+    
+    //4-bit mux
+    if(b[2] == b1) {          
+      if(alufn[1] == b1 & a[31] == b1){
+        //shift right arithmetic and MSB=1
+        mux3_output[27:0] = mux2_output[31:4]; //take 28 MSB bits
+        mux3_output[31:28] = 4x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+        mux3_output[27:0] = mux2_output[31:4]; //take 28 MSB bits
+        mux3_output[31:28] = 4x{b0};
+      }
+      
+    } else {
+      //no shift
+      mux3_output = mux2_output;
+    }
+    
+    //2-bit mux
+    if(b[1] == b1) {          
+      if(alufn[1] == b1 & a[31] == b1){
+        //shift right arithmetic and MSB=1
+        mux4_output[29:0] = mux3_output[31:2]; //take 30 MSB bits
+        mux4_output[31:30] = 2x{b1};
+        
+      } else {
+        //normal shift right or MSB!=1
+        mux4_output[29:0] = mux3_output[31:2]; //take 30 MSB bits
+        mux4_output[31:30] = 2x{b0};
+      }
+      
+    } else {
+      //no shift
+      mux4_output = mux3_output;
+    }
+    
+    //1-bit mux
+    if(b[0] == b1) {          
+      if(alufn[1] == b1 & a[31] == b1){
+        //shift right arithmetic and MSB=1
+        shifted[30:0] = mux4_output[31:1]; //take 31 MSB bits
+        shifted[31] = b1;
+        
+      } else {
+        //normal shift right or MSB!=1
+        shifted[30:0] = mux4_output[31:1]; //take 31 MSB bits
+        shifted[31] = b1;
+      }
+      
+    } else {
+      //no shift
+      shifted = mux4_output;
+    }
+
+  }
+}
