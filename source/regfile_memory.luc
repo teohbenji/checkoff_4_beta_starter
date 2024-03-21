@@ -19,9 +19,25 @@ module regfile_memory (
     reg_data_2 = 0;
 
     // TASK 7 
+    // implement two output read ports
+    reg_data_1 = registers.q[read_address_1];
+    reg_data_2 = registers.q[read_address_2];
+       
+    
+    
+    // implement one write port 
+    // check if(write_en) and that we are not writing to R31 
+    if (write_enable == 1 && write_address !=31){
+        registers.d[write_address] = write_data;}
+    if (read_address_1 == 31){
+        reg_data_1 = b0;}
+    if (read_address_2 == 31){
+        reg_data_2 = b0;}
+  
+    // always give out 0 if we are reading R31 (from either RA ports)
 
     
 
     
   }
-}
+

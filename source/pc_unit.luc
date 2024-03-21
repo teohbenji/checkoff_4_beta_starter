@@ -25,19 +25,53 @@ module pc_unit (
     pc_4_sxtc_sig = 0;
     pcsel_out_sig = 0;
     
+    ia = pc.q;  // ia is value of pc at pc dff
+    
     // increment pc by 4
     pc_4_sig = c{pc.q[31], pc.q[30:0] + 4};            
     
     // TASK 4
     // shift-and-add pc by 4
+    pc_4_sxtc_32_sig = pc_4_sig + (4 * c{16x{id[15]}, id[15:0]}); // implement intermediary signal: pc + 4 + SXT(C)
+    pc_4_sxtc_sig = c{pc_4_sig[31], pc_4_sxtc_32_sig[30:2] ,b00} ;// preserve the supervisor bit
+    
+      
+    
 
     
     // TASK 1 
     // PCSEL mux 
-
+    case (pcsel){
+      h000: pcsel_out_sig = pc_4_sig; // output from #1 32 bit full adder
+      h001: pcsel_out_sig = pc_4_sxtc_sig;// output from #2 32 bit full adder
+      h010: pcsel_out_sig = c{pc_4_sig[31], reg_data_1[30:2], b00};
+      h011: pcsel_out_sig = b10000000000000000000000000000100; //0b10000000000000000000000000000100//0x80000004
+      h100: pcsel_out_sig = b10000000000000000000000000000100; //0x80000004
+      h101: pcsel_out_sig = b10000000000000000000000000000100;
+      h110: pcsel_out_sig = b10000000000000000000000000000100;
+      h111: pcsel_out_sig = b10000000000000000000000000000100;
+      // consider all cases of pcsel signals 
+      // for JMP, make sure to compute the supervisor bit properly 
+      // for ILLOP and IRQ handlers, ensure that the supervisor bit is set to 1
+     
+      default: // just a default case to silence warnings 
+        pcsel_out_sig = pc.q;
+     
+    
+    // advance the PC only when slowclk is 1 
+    if (slowclk){
+        pc.d = pcsel_out_sig;
+      // set the content of pcreg to be its next value only when slowclk == reg_data_1
+          }
+        }
 
     // Task 2
     // RESET mux 
+    if (rst){
+      pcsel_out_sig = b10000000000000000000000000000000;}  //0x80000000 when RESET is asserted
+    else {
+      pcsel_out_sig = pcsel_out_sig;} // no change// no reset
+      
 
     
     // output connections
@@ -48,4 +82,4 @@ module pc_unit (
     
     
   }
-}
+
