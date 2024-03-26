@@ -41,28 +41,29 @@ module pc_unit (
     
     // TASK 1 
     // PCSEL mux 
-    case (pcsel){
-      h000: pcsel_out_sig = pc_4_sig; // output from #1 32 bit full adder
-      h001: pcsel_out_sig = pc_4_sxtc_sig;// output from #2 32 bit full adder
-      h010: pcsel_out_sig = c{pc_4_sig[31], reg_data_1[30:2], b00};
-      h011: pcsel_out_sig = b10000000000000000000000000000100; //0b10000000000000000000000000000100//0x80000004
-      h100: pcsel_out_sig = b10000000000000000000000000000100; //0x80000004
-      h101: pcsel_out_sig = b10000000000000000000000000000100;
-      h110: pcsel_out_sig = b10000000000000000000000000000100;
-      h111: pcsel_out_sig = b10000000000000000000000000000100;
-      // consider all cases of pcsel signals 
-      // for JMP, make sure to compute the supervisor bit properly 
-      // for ILLOP and IRQ handlers, ensure that the supervisor bit is set to 1
-     
-      default: // just a default case to silence warnings 
-        pcsel_out_sig = pc.q;
-     
+    // consider all cases of pcsel signals 
+    // for JMP, make sure to compute the supervisor bit properly 
+    // for ILLOP and IRQ handlers, ensure that the supervisor bit is set to 1
+    if(pcsel[2] == b1) {
+      pcsel_out_sig = b10000000000000000000000000001000; //0x80000008
+    } else {
+        case (pcsel[1:0]){
+          h00: pcsel_out_sig = pc_4_sig; // output from #1 32 bit full adder
+          h01: pcsel_out_sig = pc_4_sxtc_sig;// output from #2 32 bit full adder
+          h10: pcsel_out_sig = c{pc_4_sig[31], reg_data_1[30:2], b00};
+          h11: pcsel_out_sig = b10000000000000000000000000000100; //0x80000004
+          
+         
+          default: // just a default case to silence warnings 
+            pcsel_out_sig = pc.q;        
+          
+       }
+    }
     
     // advance the PC only when slowclk is 1 
-    if (slowclk){
-        pc.d = pcsel_out_sig;
-      // set the content of pcreg to be its next value only when slowclk == reg_data_1
-          }
+        if (slowclk){
+            pc.d = pcsel_out_sig;
+          // set the content of pcreg to be its next value only when slowclk == reg_data_1
         }
 
     // Task 2
